@@ -32,6 +32,7 @@ class ActiveRecord::ConnectionAdapters::ConnectionPool
 end
 
 $LOAD_PATH << 'lib'
+require 'ar_fibers'
 
 
 ActiveRecord::Base.establish_connection(:adapter => 'mysql_with_fibers', :database => 'netconf_test', :username => 'root')
@@ -48,23 +49,26 @@ def end_task()
   EM::stop_event_loop if ($completed += 1) == 3
 end
 
+
+
 EM::run do
+  @pool = ArFibers::FiberPool.new(10)
   
-  Fiber.new do
+  @pool.spawn do
     100.times { SiteBox.find_by_sql('SELECT SLEEP(0.2)') }
     end_task
-  end.resume
+  end
   
-  Fiber.new do
+  @pool.spawn do
     20.times { SiteBox.find_by_sql('SELECT SLEEP(0.1)') }
     10.times { SiteBox.find_by_sql('SELECT SLEEP(0.1)') }
     end_task
-  end.resume
+  end
   
-  Fiber.new do
+  @pool.spawn do
     50.times { SiteBox.find_by_sql('SELECT SLEEP(0.4)') }
     end_task
-  end.resume
+  end
 end
 
 

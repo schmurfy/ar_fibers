@@ -1,0 +1,10 @@
+= ArFibers
+
+Most of the code comes from neverblock, I wanted and needed an eventmachine version which does only one thing:
+Let me use activerecord with fibers
+
+The original code is from Mohammad A. Ali  (mailto:oldmoe@gmail.com)
+Repository can be found here: git://github.com/oldmoe/neverblock.git
+
+
+
