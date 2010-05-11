@@ -102,6 +102,7 @@ class ActiveRecord::ConnectionAdapters::ConnectionPool
   end
 
   def checkout
+    # puts "[#{Fiber.current}] Checkout"
     conn = if @checked_out.size < @connections.size
              checkout_existing_connection
            elsif @connections.size < @size
@@ -112,10 +113,12 @@ class ActiveRecord::ConnectionAdapters::ConnectionPool
     Fiber.current[:callbacks] ||= []
     Fiber.current[:callbacks] << self.method(:process_queue)
     Fiber.current[:current_pool_key] = current_pool_id
+    # puts "[#{Fiber.current}] Checkout returned #{conn}"
     conn
   end
 
   def checkin(conn)
+    # puts "[#{Fiber.current}] Checkin #{conn}"
     conn.run_callbacks :checkin
     @checked_out.delete conn
   end
@@ -143,7 +146,6 @@ class ActiveRecord::ConnectionAdapters::ConnectionPool
   end
 
   def current_pool_id
-    puts "New pool !"
     "cp_#{object_id}"
   end
 
