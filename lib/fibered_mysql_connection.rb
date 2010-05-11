@@ -54,8 +54,8 @@ module ArFibers
           raise e
         end
       else
-        super(sql)
         Fiber.current[:blocking] = nil
+        super(sql)
       end
     end
     
